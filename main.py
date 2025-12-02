@@ -38,26 +38,22 @@ def roots_20(coef: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
 
 
 def frob_a(coef: np.ndarray) -> np.ndarray | None:
-    """Funkcja służąca do wyznaczenia macierzy Frobeniusa na podstawie
-    współczynników jej wielomianu charakterystycznego:
-    w(x) = a_n*x^n + a_{n-1}*x^{n-1} + ... + a_2*x^2 + a_1*x + a_0
+    if not isinstance(coef, np.ndarray):
+        return None
+    
+    if not coef.ndim == 1:
+        return None
+    
+    if len(coef) < 2:
+        return None
+    
+    A = np.eye(len(coef)-1, k=1)
+    A[-1, :] = -coef[:-1] / coef[-1]
+    return A
 
-    Testy wymagają poniższej definicji macierzy Frobeniusa (implementacja dla 
-    innych postaci nie jest zabroniona):
-    F = [[       0,        1,        0,   ...,            0],
-         [       0,        0,        1,   ...,            0],
-         [       0,        0,        0,   ...,            0],
-         [     ...,      ...,      ...,   ...,          ...],
-         [-a_0/a_n, -a_1/a_n, -a_2/a_n,   ..., -a_{n-1}/a_n]]
-
-    Args:
-        coef (np.narray): Wektor współczynników wielomianu (n,).
-
-    Returns:
-        (np.ndarray): Macierz Frobeniusa o rozmiarze (n,n).
-        Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
-    """
     pass
+
+  
 
 
 def is_nonsingular(A: np.ndarray) -> bool | None:
@@ -72,4 +68,24 @@ def is_nonsingular(A: np.ndarray) -> bool | None:
             wypadku `False`.
         Jeżeli dane wejściowe są niepoprawne funkcja zwraca `None`.
     """
+    import numpy as np
+    # --- Walidacja wejścia ---
+    if not isinstance(A, np.ndarray):
+        return None
+    if A.ndim != 2:
+        return None
+    if A.shape[0] != A.shape[1]:
+        return None  # musi być kwadratowa
+
+    # Używamy det(A), ale pamiętamy o zerze maszynowym
+    detA = np.linalg.det(A)
+
+    # epsilon maszynowy typu float
+    eps = np.finfo(float).eps
+
+    # Jeżeli wartość bezwzględna det(A) jest mniejsza niż eps → traktujemy jako zero
+    if abs(detA) < eps:
+        return False  # macierz osobliwa
+    return True        # macierz nieosobliwa
+
     pass
